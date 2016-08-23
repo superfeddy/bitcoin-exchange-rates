@@ -21,7 +21,11 @@ public class BitcoinExchangeRates extends AbstractVerticle {
         eb.consumer("rates-client", message -> {
             System.out.println("[BitcoinExchangeRates] Received latest rate: " + message.body());
             message.reply("ack");
+
+            // save raw rate to buffer
             bufferRawRate = message.body().toString();
+
+            //todo: save rate to database
         });
 
         Router router = Router.router(vertx);
@@ -54,11 +58,11 @@ public class BitcoinExchangeRates extends AbstractVerticle {
     }
 
     private void handleGetHistoricalAvg(RoutingContext routingContext) {
-
+        //todo: database lookup
     }
 
     private void handleGetRawResp(RoutingContext routingContext) {
-
+        //todo: database lookup
     }
 
 }
