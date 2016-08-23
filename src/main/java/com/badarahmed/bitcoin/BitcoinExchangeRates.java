@@ -2,11 +2,23 @@ package com.badarahmed.bitcoin;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
+import io.vertx.core.eventbus.EventBus;
 
 public class BitcoinExchangeRates extends AbstractVerticle {
 
+    String bufferRawRate;
+
     @Override
     public void start(Future<Void> fut) {
+        vertx.deployVerticle(RatesAPIClientVerticle.class.getName());
+
+        EventBus eb = vertx.eventBus();
+        eb.consumer("rates-client", message -> {
+            System.out.println("[BitcoinExchangeRates] Received latest rate: " + message.body());
+            message.reply("ack");
+            bufferRawRate = message.body().toString();
+        });
+
         vertx
                 .createHttpServer()
                 .requestHandler(r -> {
